@@ -26,8 +26,7 @@ jobs:
       - run: npx cap add android
 
       - name: Android network settings
-        run: sed -i/<application /<application android:usesCleartextTraffic="true" /' android/app/src/main/AndroidManifest.xml
-
+        run: sed -i 's/<application /<application android:usesCleartextTraffic="true" /' android/app/src/main/AndroidManifest.xml
       - name: Build APK
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug
 
