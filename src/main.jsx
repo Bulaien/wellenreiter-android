@@ -12,6 +12,11 @@ const stations=[
  {id:'ndr2',name:'NDR 2',genre:'Pop · Norddeutschland',tag:'Pop',freq:'93.2',mark:'N2',url:'https://icecast.ndr.de/ndr/ndr2/hamburg/mp3/128/stream.mp3'},
  {id:'dlf',name:'Deutschlandfunk',genre:'Nachrichten · Kultur',tag:'Wort',freq:'103.3',mark:'DF',url:'https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3'},
  {id:'radioeins',name:'radioeins',genre:'Musik · Gespräche',tag:'Berlin',freq:'95.8',mark:'R1',url:'https://dispatcher.rndfnk.com/rbb/radioeins/live/mp3/mid'},
+ {id:'cnr1',name:'CNR-1 中国之声',genre:'Nationalradio · Nachrichten · Mandarin',tag:'China',freq:'CNR 1',mark:'中1',url:'https://lhttp.qtfm.cn/live/15318317/64k.mp3'},
+ {id:'gd-music',name:'广东音乐之声',genre:'Guangdong · Chinesische Musik',tag:'China',freq:'99.3',mark:'粤音',url:'https://lhttp.qtfm.cn/live/1260/64k.mp3'},
+ {id:'huaiji',name:'怀集音乐之声',genre:'Musikradio · Guangdong',tag:'China',freq:'FM',mark:'怀音',url:'https://lhttp.qingting.fm/live/4804/64k.mp3'},
+ {id:'tw-classic',name:'古典音樂台',genre:'Klassische Musik · Taiwan',tag:'Taiwan',freq:'97.7',mark:'古典',url:'http://59.120.88.155:8000/live.mp3'},
+ {id:'cri905',name:'CRI 环球资讯广播',genre:'Nachrichten · Kultur · Mandarin',tag:'China',freq:'90.5',mark:'CRI',url:'https://sk.cri.cn/905.m3u8'},
  {id:'paradise',name:'Radio Paradise',genre:'Eclectic · Rock',tag:'Global',freq:'WEB',mark:'RP',url:'https://stream.radioparadise.com/aac-320'},
  {id:'groove',name:'Groove Salad',genre:'Ambient · Downtempo',tag:'Chill',freq:'WEB',mark:'GS',url:'https://ice2.somafm.com/groovesalad-128-mp3'}
 ];
