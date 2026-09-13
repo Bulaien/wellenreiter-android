@@ -1,35 +1,35 @@
 name: Android APK
-
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-
       - run: npm install
       - run: npm run build
       - run: npx cap add android
-
+      - name: Install native background player
+        run: |
+          cp android-native/MainActivity.java android/app/src/main/java/de/bulaien/wellenreiter/MainActivity.java
+          cp android-native/RadioPlugin.java android/app/src/main/java/de/bulaien/wellenreiter/RadioPlugin.java
+          cp android-native/RadioService.java android/app/src/main/java/de/bulaien/wellenreiter/RadioService.java
       - name: Android network settings
-        run: sed -i 's/<application /<application android:usesCleartextTraffic="true" /' android/app/src/main/AndroidManifest.xml
+        run: |
+          sed -i 's/<application /<application android:usesCleartextTraffic="true" /' android/app/src/main/AndroidManifest.xml
+          sed -i '/<uses-permission android:name="android.permission.INTERNET"/a\    <uses-permission android:name="android.permission.WAKE_LOCK" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />\n    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />' android/app/src/main/AndroidManifest.xml
+          sed -i '/<\/application>/i\        <service android:name=".RadioService" android:exported="false" android:foregroundServiceType="mediaPlayback" />' android/app/src/main/AndroidManifest.xml
       - name: Build APK
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug
-
       - uses: actions/upload-artifact@v4
         with:
           name: Wellenreiter-APK
