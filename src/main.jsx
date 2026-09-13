@@ -1,6 +1,9 @@
 import React, {useMemo, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
+import {Capacitor, registerPlugin} from '@capacitor/core';
 import './style.css';
+
+const NativeRadio=registerPlugin('Radio');
 
 const stations=[
  {id:'bob',name:'RADIO BOB!',genre:'Rock · Schleswig-Holstein',tag:'Rock',freq:'DAB+',mark:'BOB',url:'https://streams.radiobob.de/bob-shlive/mp3-192/streams.radiobob.de/'},
@@ -20,8 +23,8 @@ function readFavs(){try{return new Set(JSON.parse(localStorage.getItem('wr-favs'
 function App(){
  const audio=useRef(null);const [current,setCurrent]=useState(stations[0]);const [playing,setPlaying]=useState(false);const [query,setQuery]=useState('');const [onlyFavs,setOnlyFavs]=useState(false);const [favs,setFavs]=useState(readFavs);const [status,setStatus]=useState('Bereit zum Abspielen');
  const shown=useMemo(()=>stations.filter(s=>(!onlyFavs||favs.has(s.id))&&(s.name+' '+s.genre).toLowerCase().includes(query.toLowerCase())),[query,onlyFavs,favs]);
- async function choose(s){const el=audio.current;if(current.id!==s.id){el.src=s.url;setCurrent(s)}else if(!el.src)el.src=s.url;setStatus('Verbindung wird hergestellt …');try{await el.play()}catch{setStatus('Sender momentan nicht erreichbar')};}
- function toggle(){playing?audio.current.pause():choose(current)}
+ async function choose(s){setCurrent(s);setStatus('Verbindung wird hergestellt …');try{if(Capacitor.isNativePlatform()){await NativeRadio.play({url:s.url,title:s.name});setPlaying(true);setStatus('Live auf Sendung')}else{const el=audio.current;if(el.src!==s.url)el.src=s.url;await el.play()}}catch{setPlaying(false);setStatus('Sender momentan nicht erreichbar')}}
+ async function toggle(){if(playing){if(Capacitor.isNativePlatform())await NativeRadio.pause();else audio.current.pause();setPlaying(false);setStatus('Wiedergabe pausiert')}else await choose(current)}
  function favorite(id,e){e.stopPropagation();const next=new Set(favs);next.has(id)?next.delete(id):next.add(id);setFavs(next);try{localStorage.setItem('wr-favs',JSON.stringify([...next]))}catch{}}
  return <><header><div className="brand"><span className="brandmark"><Icon name="radio" size={19}/></span>Wellenreiter</div><span className="live"><i/>LIVE RADIO</span></header><main><div className="eyebrow">EINFACH EINSCHALTEN</div><h1>Radio,<br/><em>das bleibt.</em></h1><p className="intro">Deine Sender aus Flensburg und der Welt.</p><div className="tabs"><button className={!onlyFavs?'on':''} onClick={()=>setOnlyFavs(false)}>Alle Sender</button><button className={onlyFavs?'on':''} onClick={()=>setOnlyFavs(true)}>Favoriten</button></div><label className="search"><Icon name="search" size={20}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Sender suchen …"/></label><section className="grid">{shown.map(s=><article key={s.id} className={current.id===s.id&&playing?'active':''} onClick={()=>choose(s)}><div className="cardtop"><small>{s.tag}</small><button onClick={e=>favorite(s.id,e)} aria-label="Favorit"><Icon name="heart" size={19} fill={favs.has(s.id)?'currentColor':'none'}/></button></div><div className="dial">{s.freq}</div><strong>{s.name}</strong><span>{s.genre}</span></article>)}</section></main><footer><div className="station"><b>{current.mark}</b><div><strong>{current.name}</strong><span>{status}</span></div></div><button className="play" onClick={toggle} aria-label={playing?'Pause':'Abspielen'}><Icon name={playing?'pause':'play'} size={28}/></button></footer><audio ref={audio} onPlay={()=>{setPlaying(true);setStatus('Live auf Sendung')}} onPause={()=>{setPlaying(false);setStatus('Wiedergabe pausiert')}} onError={()=>setStatus('Sender momentan nicht erreichbar')}/></>
 }
